@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { response } = require("express");
 const api_domain = "https://api.spoonacular.com/recipes";
 
 
@@ -37,9 +38,23 @@ async function getRecipeDetails(recipe_id) {
     }
 }
 
+async function searchRecipe(params)
+{
+    params.apiKey=process.env.spooncular_apiKey
+    try {
+        const response = await axios.get('https://api.spoonacular.com/recipes/complexSearch', { params });
+        res.json(response.data);
+      } catch (error) {
+        console.error('Error fetching recipes:', error);
+        res.status(500).json({ error: 'Error fetching recipes' });
+      }
+      console.log("got here")
+      return response
+    }
 
 
 exports.getRecipeDetails = getRecipeDetails;
+exports.searchRecipe = searchRecipe;
 
 
 
