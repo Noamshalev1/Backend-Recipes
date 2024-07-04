@@ -99,3 +99,5 @@ app.use(function (err, req, res, next) {
 //   }
 //   process.exit();
 // });
+
+module.exports = app;
