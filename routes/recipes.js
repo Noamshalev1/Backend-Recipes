@@ -17,4 +17,15 @@ router.get("/:recipeId", async (req, res, next) => {
   }
 });
 
+// search recipes
+router.post("/search", async (req, res, next) => {
+  console.log(req.body);
+  try {
+    let recipes = await recipes_utils.searchRecipe(req.body);
+    res.send(recipes);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

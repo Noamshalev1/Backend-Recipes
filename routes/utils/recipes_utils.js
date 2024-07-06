@@ -1,6 +1,7 @@
 const axios = require("axios");
 const { response } = require("express");
 const api_domain = "https://api.spoonacular.com/recipes";
+require('dotenv').config();
 
 
 
@@ -14,7 +15,7 @@ async function getRecipeInformation(recipe_id) {
     return await axios.get(`${api_domain}/${recipe_id}/information`, {
         params: {
             includeNutrition: false,
-            apiKey: process.env.spooncular_apiKey
+            apiKey: 'b1a72f1616ff413e984ea8dc1377d964'//change to env parameter <----------------
         }
     });
 }
@@ -23,7 +24,18 @@ async function getRecipeInformation(recipe_id) {
 
 async function getRecipeDetails(recipe_id) {
     let recipe_info = await getRecipeInformation(recipe_id);
-    let { id, title, readyInMinutes, image, aggregateLikes, vegan, vegetarian, glutenFree } = recipe_info.data;
+    let { 
+        id, 
+        title, 
+        readyInMinutes, 
+        image, 
+        aggregateLikes, 
+        vegan, 
+        vegetarian, 
+        glutenFree, 
+        analyzedInstructions, 
+        extendedIngredients 
+    } = recipe_info.data;
 
     return {
         id: id,
@@ -34,23 +46,24 @@ async function getRecipeDetails(recipe_id) {
         vegan: vegan,
         vegetarian: vegetarian,
         glutenFree: glutenFree,
+        analyzedInstructions: analyzedInstructions || [], // Provide default empty array if undefined
+        extendedIngredients: extendedIngredients || [],
         
     }
 }
 
 async function searchRecipe(params)
 {
-    params.apiKey=process.env.spooncular_apiKey
+    console.log("searchRecipe")
+    params.apiKey='b1a72f1616ff413e984ea8dc1377d964'//change to env parameter <----------------
     try {
-        const response = await axios.get('https://api.spoonacular.com/recipes/complexSearch', { params });
-        res.json(response.data);
-      } catch (error) {
+        const response = await axios.get(`${api_domain}/complexSearch`, { params });
+        return response.data; // Return the data from the response
+    } catch (error) {
         console.error('Error fetching recipes:', error);
-        res.status(500).json({ error: 'Error fetching recipes' });
-      }
-      console.log("got here")
-      return response
+        throw new Error('Error fetching recipes'); // Throw an error to handle it higher up in the call stack
     }
+}
 
 
 exports.getRecipeDetails = getRecipeDetails;
