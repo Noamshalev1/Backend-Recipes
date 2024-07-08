@@ -34,6 +34,16 @@ router.post("/Register", async (req, res, next) => {
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
     res.status(201).send({ message: "user created", success: true });
+    await DButils.execQuery(
+      `INSERT INTO userfamilyrecipes VALUES (${1},'${user_details.username}')`
+    );
+    await DButils.execQuery(
+      `INSERT INTO userfamilyrecipes VALUES (${2},'${user_details.username}')`
+    );
+    await DButils.execQuery(
+      `INSERT INTO userfamilyrecipes VALUES (${3},'${user_details.username}')`
+    );
+    res.status(201).send({ message: "Family recipes added", success: true });
   } catch (error) {
     next(error);
   }
@@ -52,18 +62,18 @@ router.post("/Login", async (req, res, next) => {
         `SELECT * FROM users WHERE username = '${req.body.username}'`
       )
     )[0];
-
-    if (!bcrypt.compareSync(req.body.password, user.password)) {
+    
+    if (!bcrypt.compareSync(req.body.password, user.pwd)) {
       throw { status: 401, message: "Username or Password incorrect" };
     }
 
     // Set cookie
-    req.session.user_id = user.user_id;
-
-
+    req.session.username = user.username;
+    console.log(req.session)
     // return cookie
-    res.status(200).send({ message: "login succeeded", success: true });
+    res.status(200).send({ message: "login succeeded", success: true, firstname: user.firstName});
   } catch (error) {
+    console.log("Problem")
     next(error);
   }
 });
