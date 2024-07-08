@@ -36,19 +36,35 @@ router.post('/favorites', async (req,res,next) => {
 })
 
 /**
- * This path returns the favorites recipes that were saved by the logged-in user
+ * This path returns the favorite recipes that were saved by the logged-in user
  */
-router.get('/favorites', async (req,res,next) => {
-  try{
-    const user_id = req.session.user_id;
-    let favorite_recipes = {};
-    const recipes_id = await user_utils.getFavoriteRecipes(user_id);
-    let recipes_id_array = [];
-    recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
+router.get('/favorites', async (req, res, next) => {
+  try {
+    const username = req.query.username; // Get username from query parameters
+    if (!username) {
+      return res.status(400).send({ message: 'Username is required', success: false });
+    }
+
+    const recipes_id = await user_utils.getFavoriteRecipes(username);
+    const recipes_id_array = recipes_id.map(element => element.recipe_id); // Extracting the recipe ids into an array
     const results = await recipe_utils.getRecipesPreview(recipes_id_array);
+
     res.status(200).send(results);
-  } catch(error){
-    next(error); 
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * This route removes a favorite recipe for the specified user.
+ */
+router.delete('/favorites', async (req, res, next) => {
+  try {
+    const { username, recipeId } = req.body;
+    await user_utils.removeFromFavorites(username, recipeId);
+    res.status(200).send({ success: true, message: 'Recipe removed from favorites' });
+  } catch (error) {
+    next(error);
   }
 });
 

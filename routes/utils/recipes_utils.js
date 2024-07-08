@@ -2,8 +2,7 @@ const axios = require("axios");
 const { response } = require("express");
 const api_domain = "https://api.spoonacular.com/recipes";
 require('dotenv').config();
-
-
+const apiKey = process.env.spooncular_apiKey;
 
 /**
  * Get recipes list from spooncular response and extract the relevant recipe data for preview
@@ -15,7 +14,7 @@ async function getRecipeInformation(recipe_id) {
     return await axios.get(`${api_domain}/${recipe_id}/information`, {
         params: {
             includeNutrition: false,
-            apiKey: 'b1a72f1616ff413e984ea8dc1377d964'//change to env parameter <----------------
+            apiKey: apiKey
         }
     });
 }
@@ -55,7 +54,7 @@ async function getRecipeDetails(recipe_id) {
 async function searchRecipe(params)
 {
     console.log("searchRecipe")
-    params.apiKey='b1a72f1616ff413e984ea8dc1377d964'//change to env parameter <----------------
+    params.apiKey=apiKey;
     try {
         const response = await axios.get(`${api_domain}/complexSearch`, { params });
         return response.data; // Return the data from the response
