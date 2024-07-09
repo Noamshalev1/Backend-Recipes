@@ -20,9 +20,16 @@ async function getFamilyRecipes(user_id){
 }
 
 async function addNewRecipe(username,new_recipe){
+    console.log(new_recipe.ingredients);
     const ingredients = JSON.stringify(new_recipe.ingredients);
+    console.log(ingredients)
     const instructions = JSON.stringify(new_recipe.instructions);
     await DButils.execQuery(`INSERT INTO myrecipes VALUES (${new_recipe.id},'${new_recipe.title}', '${new_recipe.summary}', ${new_recipe.readyInMinutes},${new_recipe.servings}, '${ingredients}', '${instructions}','${username}')`);
+}
+
+async function getMyRecipes(username){
+    const recipe = await DButils.execQuery(`SELECT * FROM myrecipes WHERE username='${username}'`);
+    return recipe;
 }
 
 
@@ -31,3 +38,4 @@ exports.getFavoriteRecipes = getFavoriteRecipes;
 exports.removeFromFavorites = removeFromFavorites;
 exports.getFamilyRecipes = getFamilyRecipes;
 exports.addNewRecipe = addNewRecipe;
+exports.getMyRecipes = getMyRecipes;
