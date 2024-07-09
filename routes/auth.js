@@ -78,7 +78,14 @@ router.post("/Login", async (req, res, next) => {
   }
 });
 
-router.post("/Logout", function (req, res) {
+router.post("/Logout", async function (req, res) {
+  //remove from progress table all rows with req.session.username
+  try {
+    await DButils.execQuery(`DELETE FROM progress WHERE username = '${req.session.username}'`);
+  } catch (error) {
+    console.log("error in deleting progress")
+  }
+  
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
   res.send({ success: true, message: "logout succeeded" });
 });
