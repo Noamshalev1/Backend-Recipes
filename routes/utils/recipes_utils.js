@@ -99,9 +99,42 @@ async function getFamilyRecipeDetails(recipe_id) {
       };
 }
 
+
+async function getMyRecipesPreview(recipe_array){
+    const results = [];
+    // Use a for loop to iterate over each recipe ID in the recipe_array
+    for (let recipe_id of recipe_array) {
+        // Fetch the recipe details for each recipe ID
+        const recipe_details = await getMyRecipeDetails(recipe_id);
+        // Push the fetched details to the results array
+        results.push(recipe_details);
+    }
+    // Return the array containing all the recipe previews
+    return results;
+}
+async function getMyRecipeDetails(recipe_id) {
+    const {
+        id,
+        title,
+        summary,
+        readyInMinutes,
+        servings,
+        ingredients,
+        instructions,
+      } = recipe_id;
+    
+      return {
+        id,
+        title,
+        summary,
+        readyInMinutes,
+        servings,
+        ingredients: JSON.parse(ingredients), // check if works
+        instructions: JSON.parse(instructions),
+      };
+}
 async function searchRecipe(params)
 {
-    console.log("searchRecipe")
     params.apiKey=apiKey;
     try {
         const response = await axios.get(`${api_domain}/complexSearch`, { params });
@@ -117,6 +150,7 @@ exports.getRecipeDetails = getRecipeDetails;
 exports.searchRecipe = searchRecipe;
 exports.getRecipesPreview=getRecipesPreview;
 exports.getFamilyRecipesPreview=getFamilyRecipesPreview;
+exports.getMyRecipesPreview = getMyRecipesPreview;
 
 
 
