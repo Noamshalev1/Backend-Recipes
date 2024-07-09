@@ -33,7 +33,6 @@ router.post("/Register", async (req, res, next) => {
       `INSERT INTO users VALUES ('${user_details.username}', '${user_details.firstname}', '${user_details.lastname}',
       '${user_details.country}', '${hash_password}', '${user_details.email}')`
     );
-    res.status(201).send({ message: "user created", success: true });
     await DButils.execQuery(
       `INSERT INTO userfamilyrecipes VALUES (${1},'${user_details.username}')`
     );
@@ -43,7 +42,8 @@ router.post("/Register", async (req, res, next) => {
     await DButils.execQuery(
       `INSERT INTO userfamilyrecipes VALUES (${3},'${user_details.username}')`
     );
-    res.status(201).send({ message: "Family recipes added", success: true });
+    res.status(201).send({ message: "user created", success: true });
+    
   } catch (error) {
     next(error);
   }
