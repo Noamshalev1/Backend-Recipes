@@ -8,9 +8,6 @@ const recipe_utils = require("./utils/recipes_utils");
  * Authenticate all incoming requests by middleware
  */
 router.use(async function (req, res, next) {
-  console.log("session_id")
-  console.log(req.session)
-  console.log(req.session.username)
   if (req.session && req.session.username) {
     console.log("first if")
     DButils.execQuery("SELECT username FROM users").then((users) => {
@@ -23,6 +20,7 @@ router.use(async function (req, res, next) {
     res.sendStatus(401);
   }
 });
+
 
 
 /**
@@ -98,44 +96,41 @@ router.get('/familyrecipes', async (req, res, next) => {
 router.post('/myrecipes', async (req,res,next) => {
   try{
     const user_id = req.session.username;
+    // check if it's uniqe recipe id
+    DButils.execQuery(`SELECT id FROM myrecipes WHERE username='${user_id}'`).then((myrecipes) => {
+      if (myrecipes.find((x) => x.id === req.body.recipe.id)) {
+        res.status(401).send("Duplicate recipes id");
+      }
+      next();
+    }).catch(err => next(err));
     const recipe = req.body.recipe;
     await user_utils.addNewRecipe(user_id,recipe)
     res.status(200).send("The Recipe successfully saved as myrecipe");
     } catch(error){
     next(error);
   }
+});
+
+router.get('/myrecipes', async (req,res,next) => {
+  try{
+    const user_id = req.session.username;
+    const recipes = await user_utils.getMyRecipes(user_id);
+    const results = await recipe_utils.getMyRecipesPreview(recipes)
+    res.status(200).send(results);
+    } catch(error){
+    next(error);
+  }
 })
 
-// router.post('/myrecipes', async (req, res, next) => {
-//   try {
-//     const user_id = req.session.username;
-//     const recipe = req.body.recipe;
-
-//     // Check if `user_id` and `recipe` are defined
-//     if (!user_id || !recipe) {
-//       return res.status(400).send('Invalid request');
-//     }
-
-//     // Perform the first async operation
-//     await user_utils.updateNewRecipe(user_id, recipe.id)
-//       .then(() => {
-//         // Perform the second async operation
-//         return user_utils.addNewRecipe(recipe);
-//       })
-//       .then(() => {
-//         // Send success response
-//         res.status(200).send('The Recipe successfully saved as myrecipe');
-//       })
-//       .catch(error => {
-//         // Pass the error to the Express error handler
-//         next(error);
-//       });
-
-//   } catch (error) {
-//     // Catch and pass any other errors
-//     next(error);
-//   }
-// });
-
+// Get the last search from DB - by username
+router.get("/search", async (req, res, next) => {
+  try {
+    const username = req.session.username;
+    const response = await DButils.execQuery(`SELECT searchQuery FROM lastsearch WHERE username='${username}'`);
+    res.send(response);
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router;
