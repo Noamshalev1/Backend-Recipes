@@ -121,6 +121,7 @@ async function getMyRecipeDetails(recipe_id) {
         servings,
         ingredients,
         instructions,
+        analyzedInstructions,
       } = recipe_id;
     
       return {
@@ -130,7 +131,8 @@ async function getMyRecipeDetails(recipe_id) {
         readyInMinutes,
         servings,
         ingredients: JSON.parse(ingredients), // check if works
-        instructions: JSON.parse(instructions),
+        instructions,
+        analyzedInstructions: JSON.parse(analyzedInstructions),
       };
 }
 async function searchRecipe(params)

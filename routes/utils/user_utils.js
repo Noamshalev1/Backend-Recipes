@@ -23,8 +23,9 @@ async function addNewRecipe(username,new_recipe){
     console.log(new_recipe.ingredients);
     const ingredients = JSON.stringify(new_recipe.ingredients);
     console.log(ingredients)
-    const instructions = JSON.stringify(new_recipe.instructions);
-    await DButils.execQuery(`INSERT INTO myrecipes VALUES (${new_recipe.id},'${new_recipe.title}', '${new_recipe.summary}', ${new_recipe.readyInMinutes},${new_recipe.servings}, '${ingredients}', '${instructions}','${username}')`);
+    const analyzedInstructions = JSON.stringify(new_recipe.analyzedInstructions);
+    const instructions = new_recipe.instructions;
+    await DButils.execQuery(`INSERT INTO myrecipes VALUES (${new_recipe.id},'${new_recipe.title}', '${new_recipe.summary}', ${new_recipe.readyInMinutes},${new_recipe.servings}, '${ingredients}', '${instructions}','${username}','${analyzedInstructions}')`);
 }
 
 async function getMyRecipes(username){

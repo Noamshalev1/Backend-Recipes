@@ -172,4 +172,35 @@ router.get("/lastviewed", async (req, res, next) => {
   }
 });
 
+// Post progress (update or insert)
+router.post("/:recipeId/progress", async(req, res, next)=> {
+  try {
+    const username = req.session.username;
+    const recipeId = req.params.recipeId;
+    const progress = req.body.progress;
+    const results = await DButils.execQuery(`SELECT * FROM progress WHERE recipeId=${recipeId} AND username='${username}'`);
+    if (results.length > 0) {
+        // User exists, so update the search query
+        await DButils.execQuery(`UPDATE progress SET progress='${progress}' WHERE recipeId=${recipeId} AND username='${username}'`);
+
+    } else {
+        // User does not exist, so insert a new record
+        await DButils.execQuery(`INSERT INTO progress VALUES (${recipeId}, '${username}', '${progress}')`);
+    }res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/:recipeId/progress", async(req, res, next)=> {
+  try {
+    const username = req.session.username;
+    const recipeId = req.params.recipeId;
+    const results = await DButils.execQuery(`SELECT * FROM progress WHERE recipeId=${recipeId} AND username='${username}'`);
+    res.status(200).send(results);
+  } catch (error) {
+    next(error);
+  }
+})
+
 module.exports = router;
