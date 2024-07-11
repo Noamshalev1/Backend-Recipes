@@ -63,9 +63,10 @@ router.get('/favorites', async (req, res, next) => {
 /**
  * This route removes a favorite recipe for the specified user.
  */
-router.delete('/favorites', async (req, res, next) => {
+router.delete('/favorites/:recipeId', async (req, res, next) => {
   try {
-    const recipeId = req.body.recipeId;
+    console.log(req.params.recipeId)
+    const recipeId = req.params.recipeId;
     const username = req.session.username;
     await user_utils.removeFromFavorites(username, recipeId);
     res.status(200).send({ success: true, message: 'Recipe removed from favorites' });
@@ -137,6 +138,13 @@ router.get("/search", async (req, res, next) => {
 router.post("/lastviewed", async (req, res, next) => {
   try {
     const username = req.session.username;
+    const now = new Date();
+    const formattedNow = now.getFullYear() + '-' +
+  ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
+  ('0' + now.getDate()).slice(-2) + ' ' +
+  ('0' + now.getHours()).slice(-2) + ':' +
+  ('0' + now.getMinutes()).slice(-2) + ':' +
+  ('0' + now.getSeconds()).slice(-2);
     const response = await DButils.execQuery(`SELECT recipeId FROM lastviewed WHERE username='${username}' AND recipeId=${req.body.recipeId}`);
     if (response.length > 0) {
         // User exists, so update the search query
@@ -146,7 +154,7 @@ router.post("/lastviewed", async (req, res, next) => {
     } 
     // User does not exist, so insert a new record
     console.log("Insert " + req.body.recipeId)
-    await DButils.execQuery(`INSERT INTO lastviewed VALUES (${req.body.recipeId}, '${username}')`);
+    await DButils.execQuery(`INSERT INTO lastviewed VALUES (${req.body.recipeId}, '${username}', '${formattedNow}')`);
     res.sendStatus(200);
   } catch (error) {
     next(error);
@@ -157,7 +165,7 @@ router.post("/lastviewed", async (req, res, next) => {
 router.get("/lastviewed", async (req, res, next) => {
   try {
     const username = req.session.username;
-    const response = await DButils.execQuery(`SELECT recipeId FROM lastviewed WHERE username='${username}'`);
+    const response = await DButils.execQuery(`SELECT recipeId FROM lastviewed WHERE username='${username}' ORDER BY time DESC;`);
     res.send(response);
   } catch (error) {
     next(error);
