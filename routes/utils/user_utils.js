@@ -21,11 +21,20 @@ async function getFamilyRecipes(user_id){
 
 async function addNewRecipe(username,new_recipe){
     console.log(new_recipe.ingredients);
+    // const now = new Date();
+    // const id = now.getFullYear() + '-' +
+    // ('0' + (now.getMonth() + 1)).slice(-2) + '-' +
+    // ('0' + now.getDate()).slice(-2) + ' ' +
+    // ('0' + now.getHours()).slice(-2) + ':' +
+    // ('0' + now.getMinutes()).slice(-2) + ':' +
+    // ('0' + now.getSeconds()).slice(-2);
+    const timestamp = Math.floor(new Date().getTime() / 1000);
+    const id = timestamp;
     const ingredients = JSON.stringify(new_recipe.ingredients);
     console.log(ingredients)
     const analyzedInstructions = JSON.stringify(new_recipe.analyzedInstructions);
     const instructions = new_recipe.instructions;
-    await DButils.execQuery(`INSERT INTO myrecipes VALUES (${new_recipe.id},'${new_recipe.title}', '${new_recipe.summary}', ${new_recipe.readyInMinutes},${new_recipe.servings}, '${ingredients}', '${instructions}','${username}','${analyzedInstructions}')`);
+    await DButils.execQuery(`INSERT INTO myrecipes VALUES (${id},'${new_recipe.title}', '${new_recipe.summary}', ${new_recipe.readyInMinutes},${new_recipe.servings}, '${ingredients}', '${instructions}','${username}','${analyzedInstructions}')`);
 }
 
 async function getMyRecipes(username){

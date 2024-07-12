@@ -98,13 +98,12 @@ router.post('/myrecipes', async (req,res,next) => {
   try{
     const user_id = req.session.username;
     // check if it's uniqe recipe id
-    DButils.execQuery(`SELECT id FROM myrecipes WHERE username='${user_id}'`).then((myrecipes) => {
-      if (myrecipes.find((x) => x.id === req.body.recipe.id)) {
-        res.status(401).send("Duplicate recipes id");
-      }
-      next();
-    }).catch(err => next(err));
+    const myrecipes = await DButils.execQuery(`SELECT id FROM myrecipes WHERE username='${user_id}'`);
+    if (myrecipes.find((x) => x.id === req.body.recipe.id)) {
+      res.status(401).send("Duplicate recipes id");
+    }
     const recipe = req.body.recipe;
+    console.log("Recipe " + recipe);
     await user_utils.addNewRecipe(user_id,recipe)
     res.status(200).send("The Recipe successfully saved as myrecipe");
     } catch(error){
