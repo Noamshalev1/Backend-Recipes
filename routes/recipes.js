@@ -23,11 +23,11 @@ router.get("/:recipeId", async (req, res, next) => {
  * Applay search - by query and insert to DB (for last search)
  */
 router.post("/search", async (req, res, next) => {
+  console.log("Hi I'm POST")
   try {
     const username = req.session.username;
-    console.log("Hi I'm POST")
     let recipes = await recipes_utils.searchRecipe(req.body);
-    const searchQuery = req.query.query;
+    const searchQuery = req.body.query;
     const results = await DButils.execQuery(`SELECT * FROM lastsearch WHERE username ='${username}'`);
     if (results.length > 0) {
         // User exists, so update the search query

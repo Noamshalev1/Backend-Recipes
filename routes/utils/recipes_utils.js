@@ -137,6 +137,7 @@ async function getMyRecipeDetails(recipe_id) {
 }
 async function searchRecipe(params)
 {
+    console.log("Get from api");
     params.apiKey=apiKey;
     try {
         const response = await axios.get(`${api_domain}/complexSearch`, { params });
